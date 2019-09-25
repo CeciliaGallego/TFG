@@ -6,7 +6,7 @@ function [corr_matrix] = CorrelationMatrix (trial_data, field, column)
 % correlate
 % column: the neuron or lfp chanel (and frequency band) to correlate
 
-TimeLimit = min(cat(1,trial_data.idx_endTime)-cat(1,trial_data.idx_goCueTime))
+TimeLimit = min(cat(1,trial_data.idx_endTime)-cat(1,trial_data.idx_goCueTime));
 samples = size(trial_data,2);
 data = zeros (TimeLimit,samples);
 
