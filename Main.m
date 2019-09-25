@@ -14,7 +14,7 @@ trial_data = binTD(trial_data,1);  %how many bins do you want to combine
 trial_data = smoothSignals(trial_data,struct('signals',{{'M1_spikes'}},'width',0.05));
 
 % Look for data with the same target
-targets = unique(cat(1,trial_data.tgtDir));
+targets = unique([trial_data.tgtDir]);
 [~, data_target] = getTDidx(trial_data,'tgtDir',targets(1));
 
 % Correlation matrix

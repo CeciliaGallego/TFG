@@ -3,11 +3,8 @@ close all; clear; clc;
 % Open TD ('Chewie_CO_20162110.mat'   'Chewie_CO_CS_2016-10-21.mat')
 trial_data = loadTDfiles('Chewie_CO_20162110.mat',{@getTDidx,{'result','R'}});
 
-
 % Find movement onset
-params.go_cue_name = 'idx_goCueTime';
-trial_data = getRWMovements(trial_data,params);
-
+trial_data = FindMovementOn(trial_data,0.6);
 
 % Smooth spikes
 trial_data = smoothSignals(trial_data,struct('signals',{{'M1_spikes'}},'width',0.05));
