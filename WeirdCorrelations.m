@@ -9,20 +9,23 @@ trial_data = trimTD(trial_data, 'idx_goCueTime',{'idx_goCueTime',124});
 % Get trials to the same target
 targets = unique([trial_data.tgtDir]);
 
-figure
-for n = 1:8
-    [~,td_tgt] = getTDidx(trial_data,'tgtDir',targets(n));
-    lfps = [];
-    for m = 1:length(td_tgt)
-        lfps = cat(2,lfps,td_tgt(m).M1_lfp(:,3));
-    end
-    cor = corr(lfps);
-    subplot(2,4,n)
-    imagesc(cor); colormap 'jet'; caxis([-1 1]); colorbar;
-    title(round(targets(n),2));
-    
-end
 
+for band = 1:size(trial_data(1).M1_lfp,2)
+    figure
+    for n = 1:8
+        [~,td_tgt] = getTDidx(trial_data,'tgtDir',targets(n));
+        lfps = [];
+        for m = 1:length(td_tgt)
+            lfps = cat(2,lfps,td_tgt(m).M1_lfp(:,band));
+        end
+        cor = corr(lfps);
+        subplot(2,4,n)
+        imagesc(cor); colormap 'jet'; caxis([-1 1]); %colorbar;
+        title(round(targets(n),2));
+
+    end
+    pause
+end
 
 % 
 % [~,td_tgt] = getTDidx(trial_data,'tgtDir',targets(1));
@@ -39,27 +42,28 @@ end
 % out = cor(mask);
 % figure; hist(out);
 
-
-band = 2; tgt = 3;
-[~,td_tgt] = getTDidx(trial_data,'tgtDir',targets(tgt));
-lfps = [];
-for m = 1:length(td_tgt)
-    lfps = cat(2,lfps,td_tgt(m).M1_lfp(:,band));
-end
-cor = corr(lfps);
-figure
-imagesc(cor); colormap 'jet'; caxis([-1 1]); colorbar;
-figure
-for m = 1:length(td_tgt)
-    if cor(m,1) >= 0.4
-        hold on; plot(td_tgt(m).M1_lfp(:,band),'r');
-    elseif (cor(m,1) >= 0) && (cor(m,1) < 0.4)
-        hold on; plot(td_tgt(m).M1_lfp(:,band),'g');
-    else 
-        hold on; plot(td_tgt(m).M1_lfp(:,band),'b');
+for band = 1:7:672
+    tgt = 1; line = 7;
+    [~,td_tgt] = getTDidx(trial_data,'tgtDir',targets(tgt));
+    lfps = [];
+    for m = 1:length(td_tgt)
+        lfps = cat(2,lfps,td_tgt(m).M1_lfp(:,band));
     end
+    cor = corr(lfps);
+%     figure
+%     imagesc(cor); colormap 'jet'; caxis([-1 1]); colorbar;
+    figure
+    for m = 1:length(td_tgt)
+        if cor(m,line) >= 0.4
+            hold on; plot(td_tgt(m).M1_lfp(:,band),'r');
+        elseif (cor(m,line) >= 0) && (cor(m,1) < 0.4)
+            hold on; plot(td_tgt(m).M1_lfp(:,band),'g');
+        else 
+            hold on; plot(td_tgt(m).M1_lfp(:,band),'b');
+        end
+    end
+    pause(2)
 end
-
 
 
 % total_cor = {};

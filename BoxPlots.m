@@ -9,6 +9,13 @@ trial_data = smoothSignals(trial_data,struct('signals',{{'M1_spikes'}},'width',0
 % Get only the data when the monkey is moving
 trial_data = trimTD(trial_data, 'idx_goCueTime',{'idx_goCueTime',124});
 
+% Load the mask of modulated bands
+load('C:\Users\Cecilia\Documents\MATLAB\Mis scripts\mod_channelAndBand.mat')
+for n = 1:length(trial_data)
+    mod_trial_data(n).M1_lfp = trial_data(n).M1_lfp(:,mask);
+end
+    
+
 % Get target directions
 targets = unique([trial_data.tgtDir]);
 idx = zeros(33,8);  % 33 is the minimum number of trials per target
@@ -21,7 +28,7 @@ end
 blocks = {}; 
 for n = 1:33
     for m = 1:8
-        blocks{n,m} = trial_data(idx(n,m)).M1_lfp;
+        blocks{n,m} = mod_trial_data(idx(n,m)).M1_lfp;
     end 
 end
 
@@ -29,7 +36,7 @@ result = [];
 for n = 1:32
     data = [];
     for m = 1:8
-        data = cat(1,data,diag(corr(blocks{n,m},blocks{n+1,m})));
+        data = cat(1,data,mean(diag(corr(blocks{n,m},blocks{n+1,m}))));
     end
     result = cat(2,result,data);
 end
@@ -37,6 +44,16 @@ end
 figure
 boxplot(result)
 
+% Comparison single target
+for m = 1:8
+    result = [];
+    for n = 1:32
+        result = cat(2,result,diag(corr(blocks{n,m},blocks{n+1,m})));
+    end
+
+    figure
+    boxplot(result)
+end
 
 
 % Comparison block by block
@@ -56,10 +73,66 @@ end
 figure
 boxplot(result)
 
+%%%%%%%%%%%%%%%% CONTINUE HERE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Single band
+final = {};
+for band = 1:size(mod_trial_data(1).M1_lfp,2)
+    
+    blocks = {}; 
+    for n = 1:33
+        for m = 1:8
+            blocks{n,m} = trial_data(idx(n,m)).M1_lfp(:,band);
+        end 
+    end
+
+    result = [];
+    for n = 1:32
+        data = [];
+        for m = 1:8
+            data = cat(1,data,corr(blocks{n,m},blocks{n+1,m}));
+        end
+        result = cat(2,result,data);
+    end
+
+%     figure
+%     boxplot(result)
+    final{end+1} = result;
+    
+end
+
+
+
+% Analysis of result for each band
+final = [];
+for band = 1:size(mod_trial_data(1).M1_lfp,2)
+    blocks = {}; 
+    for n = 1:33
+        for m = 1:8
+            blocks{n,m} = mod_trial_data(idx(n,m)).M1_lfp(:,band);
+        end 
+    end
+
+    result = [];
+    for n = 1:32
+        data = [];
+        for m = 1:8
+            data = cat(1,data,corr(blocks{n,m},blocks{n+1,m}));
+        end
+        result = cat(2,result,mean(data));
+    end
+    final(band,:) = result;
+end
+
+
+figure
+for n = 1:size(final,1)
+    hold on; plot(final(n,:));
+end
+
 %% New section
 
 % So the same analysis but for an specific frequecy band
-for band = 1:7
+for band = 1
     blocks = {}; 
     for n = 1:33
         for m = 1:8
@@ -67,16 +140,27 @@ for band = 1:7
         end 
     end
 
-    % Only one boxplot
-    result = [];
-    for n = 1:32
-        data = [];
-        for m = 1:8
-            data = cat(1,data,diag(corr(blocks{n,m},blocks{n+1,m})));
+%     % Only one boxplot
+%     result = [];
+%     for n = 1:32
+%         data = [];
+%         for m = 1:8
+%             data = cat(1,data,diag(corr(blocks{n,m},blocks{n+1,m})));
+%         end
+%         result = cat(2,result,data);
+%     end
+% 
+%     figure
+%     boxplot(result)
+%     
+    
+    for m = 1:8
+        result = [];
+        for n = 1:32
+            result = cat(2,result,diag(corr(blocks{n,m},blocks{n+1,m})));
         end
-        result = cat(2,result,data);
-    end
 
-    figure
-    boxplot(result)
+        figure
+        boxplot(result)
+    end
 end
