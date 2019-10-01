@@ -4,7 +4,7 @@ close all; clear; clc
 
 
 % load('Chewie_CO_CS_2016-10-21.mat');
-trial_data=loadTDfiles('Chewie_CO_CS_2016-10-21.mat',{@getTDidx,{'result','R'}});
+trial_data=loadTDfiles('Chewie_CO_20162110_ceci.mat',{@getTDidx,{'result','R'}});
 
 % Variables
 smooth = true;
@@ -18,6 +18,7 @@ decode_var = 'vel';
 decode_mod = 'linmodel';
 pol = 0; % It has to be an even number
 pca = false;
+lfp = true;
 
 % % % figure    % figure1
 % % % n = 5;
@@ -30,19 +31,22 @@ if smooth
     trial_data = smoothSignals(trial_data,struct('signals',{{'M1_spikes'}},'width',0.05));
 end
 
+
+% Get only the data when the monkey is moving
+trial_data = trimTD(trial_data, 'idx_goCueTime',{'idx_goCueTime',124});
+
 % Change bin size to 20 ms
 trial_data = binTD(trial_data,bin_size/10);
 
 % Remove trials with NaN in their idx fields
 trial_data = removeBadTrials(trial_data);
 
-% Get only the data when the monkey is moving
-trial_data = trimTD(trial_data, {'idx_movement_on',-0.3/(bin_size/1000)},'idx_trial_end');
-
 % Get PCA and data to obtain the latent variables
 if pca
     [trial_data,data] = dimReduce(trial_data, struct('signals','M1_spikes','num_dims',pca_dims));
     name = 'M1_pca';
+elseif lfp
+    name = 'M1_lfp';
 else
     name = 'M1_spikes';
 end

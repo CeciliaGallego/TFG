@@ -3,7 +3,7 @@ pca_dims = 10;
 bin_size = 3;
 BinToPast = 5;
 name = 'M1_lfp';
-folds = 10;
+folds = 3;
 
 % load('Chewie_CO_CS_2016-10-21.mat');
 [trial_data, pars_td] = loadTDfiles( 'Chewie_CO_20162110.mat', ...
@@ -40,7 +40,8 @@ band_idx = cat(1,gamma1_idx,gamma2_idx,gamma3_idx,gamma4_idx); trial_data_2 = tr
 for n = 1:length(trial_data)
     trial_data_2(n).M1_lfp = trial_data(n).M1_lfp(:,band_idx);
 end
-name = 'M1_spikes';
+name = 'M1_lfp'; 
+trial_data = trial_data(1:89);
 for n = 1:folds
     disp(n)
     idx = randperm(length(trial_data));
