@@ -4,7 +4,7 @@ close all; clear; clc;
 trial_data = loadTDfiles('Chewie_CO_20162110_ceci.mat',{@getTDidx,{'result','R'}});
 
 % Get only the data when the monkey is moving
-trial_data = trimTD(trial_data, 'idx_goCueTime',{'idx_goCueTime',124});
+trial_data = trimTD(trial_data, {'idx_movement_on',-12},{'idx_movement_on',42});
 
 % Get trials to the same target
 target = unique([trial_data.tgtDir]);
@@ -30,13 +30,24 @@ avg_data = trialAverage(trial_data,{'tgtDir'});
 % Tunning curves histogram
 George_data = binTD(avg_data,size(avg_data(1).pos,1));
 r2 = [];
-for band = 1:672
+for band = 1:size(trial_data(1).M1_lfp,2)
     points = [];
     for n = 1:8
         points(end+1) = (George_data(n).M1_lfp(band));
     end    
-    [~,stats]=fit(target',points','fourier1');
+    [f,stats]=fit(target',points','fourier1');
     r2(end+1) = stats.rsquare;
+%     if stats.rsquare >= 0.8
+%         figure
+%         plot( f, target', points')
+%         title('SI')
+%         pause (2)
+%     else
+%         figure
+%         plot( f, target', points')
+%         title('NO')
+%         pause (2)
+%     end
 end
 figure
 hist(r2);

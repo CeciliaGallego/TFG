@@ -3,11 +3,11 @@ close all; clear; clc;
 % Open TD ('Chewie_CO_20162110.mat'   'Chewie_CO_CS_2016-10-21.mat')
 trial_data = loadTDfiles('Chewie_CO_20162110_ceci.mat',{@getTDidx,{'result','R'}});
 
-% Smooth spikes
-trial_data = smoothSignals(trial_data,struct('signals',{{'M1_spikes'}},'width',0.05));
+% % Smooth spikes
+% trial_data = smoothSignals(trial_data,struct('signals',{{'M1_spikes'}},'width',0.05));
 
 % Get only the data when the monkey is moving
-trial_data = trimTD(trial_data, 'idx_goCueTime',{'idx_goCueTime',124});
+trial_data = trimTD(trial_data, {'idx_movement_on',-12},{'idx_movement_on',42});
 
 % Load the mask of modulated bands
 load('C:\Users\Cecilia\Documents\MATLAB\Mis scripts\mod_channelAndBand.mat')

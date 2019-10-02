@@ -28,22 +28,34 @@ for band = 1:7
 end
 
 % Generate matrices for CCA
-pca = []; r = []; r_boot = [];
-rand_idx = randperm(length(trial_data));
+pca = []; r = [];
 for band = 1:7
-    lfp = []; r_lfp = [];
+    lfp = [];
     for trial = 1:length(trial_data)
         if band == 1
             pca = cat(1,pca,trial_data(trial).M1_pca);  
         end
         lfp = cat(1,lfp,trial_data(trial).(bands{band}));
-        r_lfp = cat(1,r_lfp,trial_data(rand_idx(trial)).(bands{band}));
     end  
     [~,~,aux] = canoncorr(lfp,pca);
     r = cat(1,r,aux);
-    [~,~,aux] = canoncorr(r_lfp,pca);
-    r_boot = cat(1,r_boot,aux);
 end
+
+r_boot = [];
+for iter = 1:1000
+    rand_idx = randperm(length(trial_data));
+    disp(iter)
+    for band = 1:7
+        r_lfp = [];
+        for trial = 1:length(trial_data)
+            r_lfp = cat(1,r_lfp,trial_data(rand_idx(trial)).(bands{band}));
+        end  
+        [~,~,aux] = canoncorr(r_lfp,pca);
+        r_boot = cat(1,r_boot,aux);
+    end
+end
+
+new_r_boot = mean(r_boot);
 
 % Plot result
 c = parula(7);
@@ -52,7 +64,10 @@ for band = 1:7
     hold on; plot(r(band,:),'color',c(band,:));   
 %     hold on; plot(r_boot(band,:),'color',c(band,:));   
 end
-hold on; plot(mean(r_boot),'k','linewidth',2);
+hold on; plot(new_r_boot,'k','linewidth',2);
+
+
+
 
 
 % lfp = []; pca = [];
