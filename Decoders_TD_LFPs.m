@@ -2,8 +2,8 @@
 pca_dims = 10;
 bin_size = 3;
 BinToPast = 5;
-name = 'M1_lfp';
-folds = 1;
+name = 'M1_lfp_c';
+folds = 10;
 
 % load('Chewie_CO_CS_2016-10-21.mat');
 [trial_data, pars_td] = loadTDfiles( 'Chewie_CO_20162110_ceci.mat', ...
@@ -27,40 +27,39 @@ folds = 1;
                
 for n = 1:folds
     disp(n)
-    idx = randperm(length(trial_data));
-    [vaf_lfp(n,1), vaf_lfp(n,2),x_vel,x_est,y_vel,y_est] = TD_ComputeModelAndPlotLFP(trial_data,BinToPast,idx,name);
+    [vaf_lfp(n,1), vaf_lfp(n,2),x_vel,x_est,y_vel,y_est] = TD_ComputeModelAndPlotLFP(trial_data,BinToPast,name);
 end
 
-% for n = 1:folds
-%     disp(n)
-%     idx = randperm(length(trial_data));
-%     [vaf_spk(n,1), vaf_spk(n,2),~,~,~,~] = TD_ComputeModelAndPlotLFP(trial_data,BinToPast,idx,name);
-% end
+name = 'M1_spikes';
+for n = 1:folds
+    disp(n)
+    [vaf_spk(n,1), vaf_spk(n,2),~,~,~,~] = TD_ComputeModelAndPlotLFP(trial_data,BinToPast,name);
+end
 
-% figure
-% minimum = min(min(vaf_lfp,vaf_spk));
-% [d1,edge1] = histcounts(vaf_spk(:,1),minimum(1):0.01:1); 
-% [d2,edge2] = histcounts(vaf_lfp(:,1),minimum(1):0.01:1);
-% hold on;
-% one = bar(edge1(1:end-1),d1,'histc'); two = bar(edge2(1:end-1),d2,'histc');
-% one.FaceColor = 'r'; two.FaceColor = [.6 .6 .6];
-% alpha(one,.5); alpha(two,.5); 
-% l = legend('High freq','Low freq'); l.FontSize = 9;
-% title('X Velocity VAF'); xlabel('VAF'); ylabel('Counts')
-% set(gca, 'TickDir','out', 'FontName', 'Times New Roman', 'Fontsize', 14), box off
-% set(gcf, 'Position',  [100, 100, 250, 200])
-% 
-% figure
-% [d1,edge1] = histcounts(vaf_spk(:,2),minimum(2):0.01:1); 
-% [d2,edge2] = histcounts(vaf_lfp(:,2),minimum(2):0.01:1);
-% hold on;
-% one = bar(edge1(1:end-1),d1,'histc'); two = bar(edge2(1:end-1),d2,'histc');
-% one.FaceColor = 'r'; two.FaceColor = [.6 .6 .6];
-% alpha(one,.5); alpha(two,.5); 
-% l = legend('High freq','Low freq'); l.FontSize = 9;
-% title('Y Velocity VAF'); xlabel('VAF'); ylabel('Counts')
-% set(gca, 'TickDir','out', 'FontName', 'Times New Roman', 'Fontsize', 14), box off
-% set(gcf, 'Position',  [100, 100, 250, 200])
+figure
+minimum = min(min(vaf_lfp,vaf_spk));
+[d1,edge1] = histcounts(vaf_spk(:,1),minimum(1):0.01:1); 
+[d2,edge2] = histcounts(vaf_lfp(:,1),minimum(1):0.01:1);
+hold on;
+one = bar(edge1(1:end-1),d1,'histc'); two = bar(edge2(1:end-1),d2,'histc');
+one.FaceColor = 'r'; two.FaceColor = [.6 .6 .6];
+alpha(one,.5); alpha(two,.5); 
+l = legend('High freq','Low freq'); l.FontSize = 9;
+title('X Velocity VAF'); xlabel('VAF'); ylabel('Counts')
+set(gca, 'TickDir','out', 'FontName', 'Times New Roman', 'Fontsize', 14), box off
+set(gcf, 'Position',  [100, 100, 250, 200])
+
+figure
+[d1,edge1] = histcounts(vaf_spk(:,2),minimum(2):0.01:1); 
+[d2,edge2] = histcounts(vaf_lfp(:,2),minimum(2):0.01:1);
+hold on;
+one = bar(edge1(1:end-1),d1,'histc'); two = bar(edge2(1:end-1),d2,'histc');
+one.FaceColor = 'r'; two.FaceColor = [.6 .6 .6];
+alpha(one,.5); alpha(two,.5); 
+l = legend('High freq','Low freq'); l.FontSize = 9;
+title('Y Velocity VAF'); xlabel('VAF'); ylabel('Counts')
+set(gca, 'TickDir','out', 'FontName', 'Times New Roman', 'Fontsize', 14), box off
+set(gcf, 'Position',  [100, 100, 250, 200])
 
 % 
 % 
